@@ -1,7 +1,8 @@
 /**
  * @file
- * @author Igor Lesik 2017
- *
+ * @brief     fcomment main entry.
+ * @author    Igor Lesik 2017
+ * @copyright MIT license.
  */
 #include <stdlib.h>
 #include <stdio.h>
