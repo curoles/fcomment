@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
                 printf("Help!\n");
                 return EXIT_SUCCESS;
             }
-            else if (0 == strcmp(cmd, "ls") == 0 || strcmp(cmd, "list") == 0) {
+            else if (0 == strcmp(cmd, "ls") || strcmp(cmd, "list") == 0) {
                 cmdId = CMD_LIST; argv[0] = "list"; argv[1] = "";
             }
         }
