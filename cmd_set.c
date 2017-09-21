@@ -12,10 +12,90 @@
 
 #include "file.h"
 
+// Program documentation.
+static char doc[] =
+    "Attach a comment to a file.";
+
+// A description of the arguments we accept.
+static char args_doc[] = "FILE COMMENT";
+
+// The options we understand.
+static struct argp_option options[] = {
+    { 0 }
+};
+
+// Used to communicate with parse_opt.
+struct Arguments
+{
+    char *args[2];  /* file & comment */
+    //int silent, verbose;
+    //char *output_file;
+};
+
+/* Parse a single option.
+ */
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+    /* Get the input argument from argp_parse, which we
+       know is a pointer to our arguments structure. */
+    struct Arguments *arguments = state->input;
+
+  switch (key)
+    {
+    /*case 'q': case 's':
+      arguments->silent = 1;
+      break;
+    case 'v':
+      arguments->verbose = 1;
+      break;
+    case 'o':
+      arguments->output_file = arg;
+      break;*/
+
+    case ARGP_KEY_ARG:
+      if (state->arg_num >= 2)
+        /* Too many arguments. */
+        argp_usage (state);
+
+      arguments->args[state->arg_num] = arg;
+
+      break;
+
+    case ARGP_KEY_END:
+      if (state->arg_num < 2)
+        /* Not enough arguments. */
+        argp_usage (state);
+      break;
+
+    default:
+      return ARGP_ERR_UNKNOWN;
+    }
+  return 0;
+}
+
+// Argp parser.
+static struct argp argParser = { options, parse_opt, args_doc, doc };
+
 int fcomment_set(int argc, char* argv[])
 {
-    //argp_parse(&set_argp, argc, argv, 0, 0, 0);
+    struct Arguments arguments;
 
+    argp_parse(&argParser, argc, argv, 0, 0, &arguments);
+
+    //printf("FILE=%s COMMENT=%s\n",
+    //    arguments.args[0], arguments.args[1]
+    //);
+
+    int result = File_setXAttrStr(
+        arguments.args[0],
+        "user.comment",
+        arguments.args[1]
+    );
+
+    if (0 != result) {
+        perror("Failed to set extended file attribute");
+    }
 
     return EXIT_SUCCESS;
 }

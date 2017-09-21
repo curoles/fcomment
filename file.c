@@ -10,18 +10,26 @@
 #include <string.h>
 #include <sys/xattr.h>
 
+/**
+ *
+ * @return On success, zero is returned. On failure, -1 is returned.
+ */
 int File_setXAttrStr(
     const char* file_path,
     const char* attr_name,
     const char* attr_value_str
 )
 {
+    /* If flags is zero, the extended attribute will be
+     * created if it does not exist, or the value will be replaced if the
+     * attribute already exists.
+     */
     int result = setxattr(
         file_path,
         attr_name,
         attr_value_str,
         strlen(attr_value_str) + 1,
-        XATTR_CREATE | XATTR_REPLACE
+        0 /*XATTR_CREATE | XATTR_REPLACE*/
     );
 
 

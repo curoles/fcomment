@@ -67,6 +67,8 @@ static CmdId detectCommandBy2ndArg(const char* cmd)
     return cmdId;
 }
 
+#include "terminal.h"
+
 int main(int argc, char* argv[])
 {
     assert (argc > 0);
@@ -100,6 +102,8 @@ int main(int argc, char* argv[])
     }
 
     ProgramFunction prog = progs[cmdId];
+
+    Terminal_init();
 
     int result = prog(argc, argv);
 
