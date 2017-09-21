@@ -1,15 +1,18 @@
 # Call this script from a build directory to automatically
 # generate proxy Makefile that inlcudes Makefile from the source directory. 
-# 
+#
+
+USER=`id -un`
+echo "User                       : $USER"
 
 CWD=`pwd`
-echo "Current working directory  :$CWD"
+echo "Current working directory  : $CWD"
 
 SOURCE_PATH="$(dirname ${BASH_SOURCE[0]})"
-echo "Path to source files       :$SOURCE_PATH"
+echo "Path to source files       : $SOURCE_PATH"
 
 ABS_SOURCE_PATH=$(realpath $SOURCE_PATH)
-echo "Abs path to source files   :$ABS_SOURCE_PATH"
+echo "Abs path to source files   : $ABS_SOURCE_PATH"
 
 MAKE_CONFIG="config.makefile"
 
@@ -29,8 +32,13 @@ echo "BUILD_DIR:=$BUILD_DIR" >> $MAKE_CONFIG
 #echo GCC=$GCC_PATH
 #echo "GCC:=$GCC_PATH" >> $MAKE_CONFIG
 
+USER_CONFIG="$USER.config.makefile"
+if [ ! -f $USER_CONFIG ]; then
+    echo "# Redefine MAKE variables here" > $USER_CONFIG
+fi
+
 # At last include custom configuration.
-echo "-include custom.config.makefile" >> $MAKE_CONFIG
+echo "-include $USER_CONFIG" >> $MAKE_CONFIG
 
 
 echo DONE!

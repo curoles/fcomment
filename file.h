@@ -29,7 +29,13 @@ ssize_t File_getXAttrStr(
 
 typedef void (*DirVisitor)(const char* path);
 
-int Dir_iterate(
+int Dir_visit(
+    const char* path,
+    DirVisitor visitor
+);
+
+
+int Dir_visitAlphaOrder(
     const char* path,
     DirVisitor visitor
 );

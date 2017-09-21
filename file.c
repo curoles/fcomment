@@ -5,7 +5,7 @@
  */
 #include "file.h"
 
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/xattr.h>
@@ -45,10 +45,11 @@ ssize_t File_getXAttrStr(
     return result;
 }
 
+//#define _GNU_SOURCE
 #include <dirent.h>
 
 
-int Dir_iterate(
+int Dir_visit(
     const char* path,
     DirVisitor visitor
 )
@@ -66,6 +67,30 @@ int Dir_iterate(
     }
 
     closedir(dir);
+
+    return 0;
+}
+
+int Dir_visitAlphaOrder(
+    const char* path,
+    DirVisitor visitor
+)
+{
+    struct dirent **namelist;
+
+    int size = scandir(path, &namelist, NULL, alphasort);
+
+    if (size < 0) {
+        perror("scandir");
+        return -1;
+    }
+    else {
+        for (int i = 0; i < size; i++) {
+            visitor(namelist[i]->d_name);
+            free(namelist[i]);
+        }
+        free(namelist);
+    }
 
     return 0;
 }
