@@ -7,12 +7,18 @@
 
 #include <sys/types.h>
 #include <string.h>
+#include <stdbool.h>
 
-typedef struct File
-{
-    const char* path;
+//typedef struct File
+//{
+//    const char* path;
+//} File;
 
-} File;
+bool File_exist(const char* path);
+
+bool File_isDirectory(const char* path);
+bool File_isRegularFile(const char* path);
+bool File_isSymbolicLink(const char* path);
 
 int File_setXAttrStr(
     const char* file_path,
@@ -27,7 +33,7 @@ ssize_t File_getXAttrStr(
     size_t value_buffer_size
 );
 
-typedef void (*DirVisitor)(const char* path);
+typedef void (*DirVisitor)(const char* base, const char* filename);
 
 int Dir_visit(
     const char* path,

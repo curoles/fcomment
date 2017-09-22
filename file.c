@@ -9,6 +9,31 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/xattr.h>
+#include <sys/stat.h>
+
+bool File_exist(const char* path)
+{
+    struct stat path_stat;
+    return stat(path, &path_stat) == 0;
+}
+
+bool File_isDirectory(const char* path)
+{
+    struct stat path_stat;
+    return stat(path, &path_stat) == 0 && S_ISDIR(path_stat.st_mode);
+}
+
+bool File_isRegularFile(const char* path)
+{
+    struct stat path_stat;
+    return stat(path, &path_stat) == 0 && S_ISREG(path_stat.st_mode);
+}
+
+bool File_isSymbolicLink(const char* path)
+{
+    struct stat path_stat;
+    return stat(path, &path_stat) == 0 && S_ISLNK(path_stat.st_mode);
+}
 
 /**
  *
@@ -53,7 +78,6 @@ ssize_t File_getXAttrStr(
     return result;
 }
 
-//#define _GNU_SOURCE
 #include <dirent.h>
 
 
@@ -70,7 +94,7 @@ int Dir_visit(
     else {
         struct dirent* dir_entry;
         while ((dir_entry = readdir(dir)) != NULL) {
-            visitor(dir_entry->d_name);
+            visitor(path, dir_entry->d_name);
         }
     }
 
@@ -94,7 +118,7 @@ int Dir_visitAlphaOrder(
     }
     else {
         for (int i = 0; i < size; i++) {
-            visitor(namelist[i]->d_name);
+            visitor(path, namelist[i]->d_name);
             free(namelist[i]);
         }
         free(namelist);

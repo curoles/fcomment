@@ -16,11 +16,12 @@
 static char doc[] =
     "Attach a comment to a file.";
 
-// A description of the arguments we accept.
+// A description of the arguments "set" command accepts.
 static char args_doc[] = "FILE COMMENT";
 
-// The options we understand.
+// The options "set" command understands.
 static struct argp_option options[] = {
+    {"verbose",  'v', 0,      0,  "Produce verbose output" },
     { 0 }
 };
 
@@ -28,7 +29,7 @@ static struct argp_option options[] = {
 struct Arguments
 {
     char *args[2];  /* file & comment */
-    //int silent, verbose;
+    bool verbose;
     //char *output_file;
 };
 
@@ -41,37 +42,36 @@ parse_opt (int key, char *arg, struct argp_state *state)
        know is a pointer to our arguments structure. */
     struct Arguments *arguments = state->input;
 
-  switch (key)
+    switch (key)
     {
-    /*case 'q': case 's':
-      arguments->silent = 1;
-      break;
-    case 'v':
-      arguments->verbose = 1;
-      break;
-    case 'o':
-      arguments->output_file = arg;
-      break;*/
+        case 'v':
+             arguments->verbose = true;
+            break;
+        /*case 'o':
+            arguments->output_file = arg;
+            break;*/
 
-    case ARGP_KEY_ARG:
-      if (state->arg_num >= 2)
-        /* Too many arguments. */
-        argp_usage (state);
+        case ARGP_KEY_ARG:
+            if (state->arg_num >= 2) {
+                /* Too many arguments. */
+                argp_usage (state);
+            }
+            arguments->args[state->arg_num] = arg;
 
-      arguments->args[state->arg_num] = arg;
+            break;
 
-      break;
+        case ARGP_KEY_END:
+            if (state->arg_num < 2) {
+                /* Not enough arguments. */
+                argp_usage (state);
+            }
+            break;
 
-    case ARGP_KEY_END:
-      if (state->arg_num < 2)
-        /* Not enough arguments. */
-        argp_usage (state);
-      break;
-
-    default:
-      return ARGP_ERR_UNKNOWN;
+        default:
+            return ARGP_ERR_UNKNOWN;
     }
-  return 0;
+
+    return 0;
 }
 
 // Argp parser.
@@ -79,7 +79,9 @@ static struct argp argParser = { options, parse_opt, args_doc, doc };
 
 int fcomment_set(int argc, char* argv[])
 {
-    struct Arguments arguments;
+    struct Arguments arguments = {
+        .verbose = false
+    };
 
     argp_parse(&argParser, argc, argv, 0, 0, &arguments);
 
