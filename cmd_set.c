@@ -4,11 +4,14 @@
  * @author    Igor Lesik 2017
  * @copyright MIT license.
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <argp.h>
 #include <sys/xattr.h>
+#include <libgen.h>
+#include <assert.h>
 
 #include "file.h"
 
@@ -28,7 +31,7 @@ static struct argp_option options[] = {
 // Used to communicate with parse_opt.
 struct Arguments
 {
-    char *args[2];  /* file & comment */
+    char* args[2];  /* file & comment */
     bool verbose;
     //char *output_file;
 };
@@ -77,6 +80,57 @@ parse_opt (int key, char *arg, struct argp_state *state)
 // Argp parser.
 static struct argp argParser = { options, parse_opt, args_doc, doc };
 
+static bool setCommentInHiddenFile(
+    const char* path,
+    const char* comment,
+    bool verbose
+)
+{
+    char* path_dir_copy = strdup(path);
+    char* path_file_copy = strdup(path);
+
+    char* file_name = basename(path_file_copy);
+    char* dir_name = dirname(path_dir_copy);
+
+
+    char* hidden_dir = NULL;
+    int hidden_dir_name_size = asprintf(&hidden_dir, "%s/.meta-fcomment", dir_name);
+
+    assert(hidden_dir_name_size > 0);
+
+    char* meta_dir = NULL;
+    int meta_dir_name_size = asprintf(&meta_dir, "%s/%s", hidden_dir, file_name);
+
+    assert(meta_dir_name_size > 0);
+
+    if (verbose) {printf("Hidden directory is %s\n", meta_dir);}
+
+    if (!File_exist(hidden_dir)) {
+        int hidden_dir_created = Dir_make(hidden_dir);
+        if (0 != hidden_dir_created) {perror("Can't created hidden directory");}
+    }
+
+    if (File_exist(hidden_dir) && !File_exist(meta_dir)) {
+        int meta_dir_created = Dir_make(meta_dir);
+        if (0 != meta_dir_created) {perror("Can't created hidden directory");}
+    }
+
+    if (File_exist(meta_dir)) {
+        //TODO make file name asprintf(&comment_file_name, "%s/comment.txt", meta_dir);
+        //open(comment_file_name)
+        //write comment
+        //close(fd)
+        //free(comment_file_name);
+    }
+
+    free(meta_dir);
+    free(hidden_dir);
+    free(path_dir_copy);
+    free(path_file_copy);
+
+    return true;
+}
+
 int fcomment_set(int argc, char* argv[])
 {
     struct Arguments arguments = {
@@ -85,18 +139,30 @@ int fcomment_set(int argc, char* argv[])
 
     argp_parse(&argParser, argc, argv, 0, 0, &arguments);
 
-    //printf("FILE=%s COMMENT=%s\n",
-    //    arguments.args[0], arguments.args[1]
-    //);
+    const char* path = arguments.args[0];
+    const char* comment = arguments.args[1];
+
+    if (arguments.verbose) {
+        printf("PATH=%s COMMENT=%s\n",
+            path, comment);
+    }
+
+    if (!File_exist(path)) {
+        printf("Error: file %s does not exist!", path);
+        return EXIT_FAILURE;
+    }
 
     int result = File_setXAttrStr(
-        arguments.args[0],
+        path,
         "user.comment",
-        arguments.args[1]
+        comment
     );
 
     if (0 != result) {
-        perror("Failed to set extended file attribute");
+        if (arguments.verbose) {
+            perror("Failed to set extended file attribute");
+        }
+        setCommentInHiddenFile(path, comment, arguments.verbose);
     }
 
     return EXIT_SUCCESS;

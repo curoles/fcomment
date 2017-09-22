@@ -10,6 +10,8 @@
 #include <string.h>
 #include <sys/xattr.h>
 #include <sys/stat.h>
+#include <libgen.h>
+#include <errno.h>
 
 bool File_exist(const char* path)
 {
@@ -76,6 +78,25 @@ ssize_t File_getXAttrStr(
     );
 
     return result;
+}
+
+
+
+
+/**
+ * @return 0 upon success, otherwise -1.
+ */
+int Dir_make(
+    const char* path
+)
+{
+    int status = mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
+    if (status != 0 && errno == EEXIST) {
+        status = 0;
+    }
+
+    return 0;
 }
 
 #include <dirent.h>

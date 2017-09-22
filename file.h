@@ -45,3 +45,10 @@ int Dir_visitAlphaOrder(
     const char* path,
     DirVisitor visitor
 );
+
+/**
+ * @return 0 upon success, otherwise -1.
+ */
+int Dir_make(
+    const char* path
+);

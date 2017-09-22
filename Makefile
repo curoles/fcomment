@@ -7,4 +7,4 @@ CFLAGS := -Werror -Wall -std=gnu99
 .PHONY: all
 all:
 	$(CC) $(CFLAGS) $(SRCS) -o fcomment
-	./fcomment set ./fcomment "CLI program to 1) attach comment to a file and 2) view attached comment"
+	./fcomment set -v ./fcomment "CLI program to 1) attach comment to a file and 2) view attached comment"
