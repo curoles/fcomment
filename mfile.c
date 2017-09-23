@@ -19,6 +19,7 @@
 
 static const char HIDDEN_DIR[] = ".meta-fcomment";
 static const char COMMENT_FILE[] = "comment.txt";
+static const char DOC_FILE[] = "doc.md";
 
 static void ptr_ptr_free(char** allocated_resource) {
     //printf("free %s\n", *allocated_resource);
@@ -144,4 +145,16 @@ ssize_t MFile_getComment(
     close(fd);
 
     return bytes_read;
+}
+
+char* MFile_docFilePath(const char* path)
+{
+    char* meta_dir AUTO_FREE = MFile_hiddenDirPath(path, true);
+
+    char* doc_file = NULL;
+    int doc_file_name_size = asprintf(&doc_file, "%s/%s", meta_dir, DOC_FILE);
+
+    assert(doc_file_name_size > 0);
+
+    return doc_file;
 }

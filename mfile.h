@@ -19,3 +19,6 @@ ssize_t MFile_getComment(
     char* comment_buf,
     size_t comment_buf_size
 );
+
+char* MFile_docFilePath(const char* path);
+

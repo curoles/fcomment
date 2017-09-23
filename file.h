@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 //typedef struct File
 //{
@@ -19,6 +20,11 @@ bool File_exist(const char* path);
 bool File_isDirectory(const char* path);
 bool File_isRegularFile(const char* path);
 bool File_isSymbolicLink(const char* path);
+
+void File_print(
+    const char* path,
+    FILE* outstream
+);
 
 int File_setXAttrStr(
     const char* file_path,

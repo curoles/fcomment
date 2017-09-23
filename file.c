@@ -12,6 +12,10 @@
 #include <sys/stat.h>
 #include <libgen.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <wchar.h>
 
 bool File_exist(const char* path)
 {
@@ -35,6 +39,54 @@ bool File_isSymbolicLink(const char* path)
 {
     struct stat path_stat;
     return stat(path, &path_stat) == 0 && S_ISLNK(path_stat.st_mode);
+}
+
+ssize_t File_read(
+    const char* path,
+    char* buf,
+    size_t buf_size,
+    off_t pos_in_file
+)
+{
+    int fd = open(path, O_RDONLY);
+
+    if (fd < 0) {
+        //perror("Can't open comment file");
+        return -1;
+    }
+
+    ssize_t bytes_read = pread(fd, buf, buf_size, pos_in_file);
+
+    close(fd);
+
+    return bytes_read;
+}
+
+void File_print(
+    const char* path,
+    FILE* outstream
+)
+{
+    FILE* fin = fopen(path, "r");
+
+    if (fin == NULL) {
+        return;
+    }
+
+    //wint_t wc;
+    char c;
+
+    fprintf(outstream, "Doc file:\n");
+
+    /*while ((wc=fgetwc(fin)) != WEOF) {
+        fputwc(wc, outstream);
+    }*/
+
+    while ((c=fgetc(fin)) != EOF) {
+        fputc(c, outstream);
+    }
+
+    fclose(fin);
 }
 
 /**
@@ -99,7 +151,6 @@ int Dir_make(
     return 0;
 }
 
-#include <dirent.h>
 
 
 int Dir_visit(

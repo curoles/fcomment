@@ -12,6 +12,7 @@
 
 #include "file.h"
 #include "mfile.h"
+#include "markdown.h"
 
 // Globals for Argp, version and email.
 const char* argp_program_version = "fcomment 1.0";
@@ -152,6 +153,11 @@ void showFileComment(const char* path)
     bool found_comment = getComment(path, buf, sizeof(buf));
 
     if (found_comment) {printf("%s\n", buf);}
+
+    char* doc_file = MFile_docFilePath(path);
+    //File_print(doc_file, stdout);
+    Markdown_print(doc_file, stdout);
+    free(doc_file);
 }
 
 int fcomment_ls(int argc, char* argv[])
