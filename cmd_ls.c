@@ -11,6 +11,7 @@
 #include <sys/xattr.h>
 
 #include "file.h"
+#include "mfile.h"
 
 // Globals for Argp, version and email.
 const char* argp_program_version = "fcomment 1.0";
@@ -79,7 +80,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 static struct argp lsArgParser = { options, parse_opt, args_doc, ls_argp_doc };
 
 //@return true if comment found
-static bool getComment(
+static bool getXAComment(
     const char* path,
     char* comment_buf,
     size_t comment_buf_size
@@ -104,6 +105,23 @@ static bool getComment(
         found_comment = true;
     }
 
+    return found_comment;
+}
+
+//@return true if comment found
+static bool getComment(
+    const char* path,
+    char* comment_buf,
+    size_t comment_buf_size
+)
+{
+    bool found_comment = getXAComment(path, comment_buf, comment_buf_size);
+
+    if (!found_comment) {
+        ssize_t bytes_read = MFile_getComment(path, comment_buf, comment_buf_size);
+        if (bytes_read > 0) {found_comment = true;}
+        //else {printf("read %zd bytes\n", bytes_read);}
+    }
 
     return found_comment;
 }

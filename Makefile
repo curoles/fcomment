@@ -1,4 +1,4 @@
-FILE_LIST := main.c cmd_ls.c cmd_set.c file.c terminal.c
+FILE_LIST := main.c cmd_ls.c cmd_set.c file.c terminal.c mfile.c
 
 SRCS := $(addprefix $(SOURCE_PATH)/,$(FILE_LIST))
 
