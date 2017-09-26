@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-void Markdown_print(
+void Markdown_printColorTerminal(
     const char* fin_name,
     FILE* fout
 );

@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/xattr.h>
 #include <sys/stat.h>
+#include <sys/sendfile.h>
 #include <libgen.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -60,6 +61,35 @@ ssize_t File_read(
     close(fd);
 
     return bytes_read;
+}
+
+ssize_t
+File_copy(
+    const char* source_file_name,
+    const char* dest_file_name
+)
+{
+    int source = open(source_file_name, O_RDONLY, 0);
+    if (source < 0) {
+        perror("Can't open source file");
+        return -1;
+    }
+
+    int dest = open(dest_file_name, O_WRONLY | O_CREAT , 0644);
+    if (dest < 0) {
+        perror("Can't open destination file");
+        return -1;
+    }
+
+    struct stat stat_source;
+    fstat(source, &stat_source);
+
+    sendfile(dest, source, 0, stat_source.st_size);
+
+    close(source);
+    close(dest);
+
+    return stat_source.st_size;
 }
 
 void File_print(
@@ -115,6 +145,11 @@ int File_setXAttrStr(
     return result;
 }
 
+/**
+ * @return On success, return a nonnegative value which is the size
+ *         in bytes of the extended attribute value.  On failure, -1 is
+ *         returned and errno is set appropriately.
+ */
 ssize_t File_getXAttrStr(
     const char* file_path,
     const char* attr_name,

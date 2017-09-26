@@ -13,6 +13,7 @@
 #include "file.h"
 #include "mfile.h"
 #include "markdown.h"
+#include "terminal.h"
 
 // Globals for Argp, version and email.
 const char* argp_program_version = "fcomment 1.0";
@@ -155,8 +156,15 @@ void showFileComment(const char* path)
     if (found_comment) {printf("%s\n", buf);}
 
     char* doc_file = MFile_docFilePath(path);
-    //File_print(doc_file, stdout);
-    Markdown_print(doc_file, stdout);
+    if (File_exist(doc_file))
+    {
+        if (Terminal_getInstance()->isAtty) {
+            Markdown_printColorTerminal(doc_file, stdout);
+        }
+        else {
+            File_print(doc_file, stdout);
+        }
+    }
     free(doc_file);
 }
 

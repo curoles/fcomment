@@ -26,12 +26,23 @@ void File_print(
     FILE* outstream
 );
 
+ssize_t
+File_copy(
+    const char* source_file_name,
+    const char* dest_file_name
+);
+
 int File_setXAttrStr(
     const char* file_path,
     const char* attr_name,
     const char* attr_value_str
 );
 
+/**
+ * @return On success, return a nonnegative value which is the size
+ *         in bytes of the extended attribute value.  On failure, -1 is
+ *         returned and errno is set appropriately.
+ */
 ssize_t File_getXAttrStr(
     const char* file_path,
     const char* attr_name,
