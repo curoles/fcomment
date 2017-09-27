@@ -1,29 +1,30 @@
 /**
  * @file
- * @brief     Set file comment.
+ * @brief     Copy file comment.
  * @author    Igor Lesik 2017
  * @copyright MIT license.
  */
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <argp.h>
 #include <sys/xattr.h>
-#include <libgen.h>
-#include <assert.h>
 
 #include "file.h"
+#include "mfile.h"
 #include "fcomment.h"
+#include "markdown.h"
+#include "terminal.h"
+
 
 // Program documentation.
-static char doc[] =
-    "Attach a comment to a file.";
+static char cp_argp_doc[] =
+    "Copy file comment.";
 
-// A description of the arguments "set" command accepts.
-static char args_doc[] = "FILE COMMENT";
+// A description of the arguments "cp" command accepts.
+static char args_doc[] = "SRC DEST";
 
-// The options "set" command understands.
+// The options "cps" command understands.
 static struct argp_option options[] = {
     {"verbose",  'v', 0,      0,  "Produce verbose output" },
     { 0 }
@@ -32,9 +33,8 @@ static struct argp_option options[] = {
 // Used to communicate with parse_opt.
 struct Arguments
 {
-    char* args[2];  /* file & comment */
+    char *args[2];  /* src & dest */
     bool verbose;
-    //char *output_file;
 };
 
 /* Parse a single option.
@@ -51,9 +51,6 @@ parse_opt (int key, char *arg, struct argp_state *state)
         case 'v':
              arguments->verbose = true;
             break;
-        /*case 'o':
-            arguments->output_file = arg;
-            break;*/
 
         case ARGP_KEY_ARG:
             if (state->arg_num >= 2) {
@@ -66,7 +63,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 
         case ARGP_KEY_END:
             if (state->arg_num < 2) {
-                /* Not enough arguments. */
+                /* Not enough arguments. Set default path = "." */
                 argp_usage (state);
             }
             break;
@@ -79,35 +76,28 @@ parse_opt (int key, char *arg, struct argp_state *state)
 }
 
 // Argp parser.
-static struct argp argParser = { options, parse_opt, args_doc, doc };
+static struct argp cpArgParser = { options, parse_opt, args_doc, cp_argp_doc };
 
 
-int fcomment_set(int argc, char* argv[])
+
+int fcomment_cp(int argc, char* argv[])
 {
     struct Arguments arguments = {
         .verbose = false
     };
 
-    argp_parse(&argParser, argc, argv, 0, 0, &arguments);
+    argp_parse(&cpArgParser, argc, argv, 0, 0, &arguments);
 
-    const char* path = arguments.args[0];
-    const char* comment = arguments.args[1];
+    const char* src = arguments.args[0];
 
-    if (arguments.verbose) {
-        printf("PATH=%s\nCOMMENT=%s\n",
-            path, comment);
-    }
-
-    if (!File_exist(path)) {
-        printf("Error: file %s does not exist!", path);
+    if (!File_exist(src)) {
+        printf("File %s does not exist\n", src);
         return EXIT_FAILURE;
     }
 
-    bool is_set = FComment_setComment(
-       path,
-       comment,
-       arguments.verbose
-    );
+    const char* dest = arguments.args[1];
 
-    return (is_set)? EXIT_SUCCESS:EXIT_FAILURE;
+    bool comment_copied = FComment_copy(src, dest);
+
+    return (comment_copied)? EXIT_SUCCESS:EXIT_FAILURE;
 }

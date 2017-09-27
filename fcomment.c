@@ -62,6 +62,11 @@ FComment_setComment(
         return false;
     }
 
+    if (strlen(comment) > FCOMMENT_MAX_SIZE-1) {
+        printf("Error: comment is too long, max length %u\n", FCOMMENT_MAX_SIZE-1);
+        return false;
+    }
+
     int xa_result = File_setXAttrStr(
         path,
         "user.comment",

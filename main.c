@@ -16,6 +16,7 @@ typedef enum CmdId {
     CMD_GENERIC = 0,
     CMD_LIST,
     CMD_SET,
+    CMD_COPY,
     CMD__END,
     CMD__SIZE = CMD__END
 } CmdId;
@@ -23,7 +24,8 @@ typedef enum CmdId {
 static const char* progName[CMD__SIZE] = {
     "fcomment",
     "fcomment-ls",
-    "fcomment-set"
+    "fcomment-set",
+    "fcomment-cp"
 };
 
 static bool isPrgCmd(const char* program_name, CmdId cmdId) {
@@ -33,13 +35,15 @@ static bool isPrgCmd(const char* program_name, CmdId cmdId) {
 
 int fcomment_ls(int argc, char* argv[]);
 int fcomment_set(int argc, char* argv[]);
+int fcomment_cp(int argc, char* argv[]);
 
 typedef int (*ProgramFunction)(int argc, char* argv[]);
 
 static ProgramFunction progs[CMD__SIZE] = {
     fcomment_ls,
     fcomment_ls,
-    fcomment_set
+    fcomment_set,
+    fcomment_cp
 };
 
 static CmdId detectCommandByProgName(const char* program_name)
@@ -50,6 +54,7 @@ static CmdId detectCommandByProgName(const char* program_name)
     else if (isPrgCmd(program_name, CMD_GENERIC)) {cmdId = CMD_GENERIC;}
     else if (isPrgCmd(program_name, CMD_LIST))    {cmdId = CMD_LIST;}
     else if (isPrgCmd(program_name, CMD_SET))     {cmdId = CMD_SET;}
+    else if (isPrgCmd(program_name, CMD_COPY))    {cmdId = CMD_COPY;}
     else                                          {cmdId = CMD__END;}
 
     return cmdId;
@@ -60,8 +65,9 @@ static CmdId detectCommandBy2ndArg(const char* cmd)
     CmdId cmdId = CMD__END;
 
     if (cmd == NULL)                              {cmdId = CMD__END;}
-    else if (0 == strcmp(cmd, "ls") || strcmp(cmd, "list") == 0) {cmdId = CMD_LIST;}
+    else if (0 == strcmp(cmd, "ls") || strcmp(cmd, "get") == 0) {cmdId = CMD_LIST;}
     else if (0 == strcmp(cmd, "set"))             {cmdId = CMD_SET;}
+    else if (0 == strcmp(cmd, "cp"))              {cmdId = CMD_COPY;}
     else                                          {cmdId = CMD__END;}
 
     return cmdId;
@@ -87,8 +93,8 @@ int main(int argc, char* argv[])
 
     if (cmdId == CMD_GENERIC && argc > 1) {
         const char* cmd = argv[1];
-        if (0 == strcmp(cmd, "--help")) {
-            printf("Help!\n");
+        if (0 == strcmp(cmd, "--help") || 0 == strcmp(cmd, "-h") || 0 == strcmp(cmd, "-?")) {
+            printf("fcomment ls|set|cp --help\n");
             return EXIT_SUCCESS;
         }
         else {

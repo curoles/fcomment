@@ -7,6 +7,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define FCOMMENT_MAX_SIZE 1024
 
@@ -19,4 +20,17 @@ FComment_getComment(
     const char* path,       ///< path to file
     char* comment_buf,      ///< buffer to store comment string
     size_t comment_buf_size ///< size of the buffer
+);
+
+bool
+FComment_setComment(
+    const char* path,
+    const char* comment,
+    bool verbose
+);
+
+bool
+FComment_copy(
+    const char* path_from,
+    const char* path_to
 );

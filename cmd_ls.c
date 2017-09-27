@@ -12,6 +12,7 @@
 
 #include "file.h"
 #include "mfile.h"
+#include "fcomment.h"
 #include "markdown.h"
 #include "terminal.h"
 
@@ -81,52 +82,6 @@ parse_opt (int key, char *arg, struct argp_state *state)
 // Argp parser.
 static struct argp lsArgParser = { options, parse_opt, args_doc, ls_argp_doc };
 
-//@return true if comment found
-static bool getXAComment(
-    const char* path,
-    char* comment_buf,
-    size_t comment_buf_size
-)
-{
-    ssize_t result = File_getXAttrStr(
-        path,
-        "user.comment",
-        comment_buf,
-        comment_buf_size
-    );
-
-    bool found_comment = false;
-
-    if (result == -1) {
-        //perror("Can't read extended file attribute\n");
-        if (errno == ENODATA || errno == ENOTSUP) {
-            //TODO read from file
-        }
-    }
-    else {
-        found_comment = true;
-    }
-
-    return found_comment;
-}
-
-//@return true if comment found
-static bool getComment(
-    const char* path,
-    char* comment_buf,
-    size_t comment_buf_size
-)
-{
-    bool found_comment = getXAComment(path, comment_buf, comment_buf_size);
-
-    if (!found_comment) {
-        ssize_t bytes_read = MFile_getComment(path, comment_buf, comment_buf_size);
-        if (bytes_read > 0) {found_comment = true;}
-        //else {printf("read %zd bytes\n", bytes_read);}
-    }
-
-    return found_comment;
-}
 
 static void dir_visitor(const char* base, const char* filename)
 {
@@ -134,11 +89,11 @@ static void dir_visitor(const char* base, const char* filename)
     snprintf(path, sizeof(path), "%s/%s", base, filename);
 
     char buf[1024];
-    bool found_comment = getComment(path, buf, sizeof(buf));
+    ssize_t comment_size = FComment_getComment(path, buf, sizeof(buf));
 
     //printf("%-*s - %s\n", 16, path, buf);
     printf("%s", filename);
-    if (found_comment) {printf(" - %s", buf);}
+    if (comment_size > 0) {printf(" - %s", buf);}
     printf("\n");      
 }
 
@@ -151,9 +106,9 @@ void listDirWithComments(const char* path)
 void showFileComment(const char* path)
 {
     char buf[1024];
-    bool found_comment = getComment(path, buf, sizeof(buf));
+    ssize_t comment_size = FComment_getComment(path, buf, sizeof(buf));
 
-    if (found_comment) {printf("%s\n", buf);}
+    if (comment_size > 0) {printf("%s\n", buf);}
 
     char* doc_file = MFile_docFilePath(path);
     if (File_exist(doc_file))

@@ -23,11 +23,11 @@ Usage cases:
 
 ## Do not Linux commands `attr`, `getfattr` and `setfattr` from attr package already do it?
 
-When possible **fcomment** uses **Extended File Attributes** as primary
+When possible **fcomment** uses **Extended File Attributes** as secondary
 mechanism to store _comment_.
-Secondary saving mechanism uses hidden files.
+Primary saving mechanism uses hidden files.
 
-Secondary saving mechanism helps to save file meta data when:
+Primary saving mechanism saves file meta data when Extended File Attributes may fail to do the job:
 - File system does not support **Extended File Attributes**.
 - User has no access to the tools to modify Extended File Attributes.
 - File is NFS mounted (need to double check).
@@ -46,7 +46,8 @@ To select a tool use first command line argument or create a symbolic link in fo
 | Function    | File name    | Command       | Arguments               |
 | ----------- | ------------ | ------------- | ----------------------- |
 | Get comment | fcomment-ls  | fcomment [ls] | PATH \[OPTIONS\]        |
-| Set comment | fcomment-set | fcomment set  | PATH COMMENT \[OPTIONS] |
+| Set comment | fcomment-set | fcomment set  | PATH COMMENT \[OPTIONS\]|
+| Copy comment| fcomment-cp  | fcomment cp   | SRC DEST \[OPTIONS\]    |
 
 ## Set comment
 
