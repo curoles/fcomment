@@ -100,7 +100,6 @@ static void dir_visitor(const char* base, const char* filename)
 void listDirWithComments(const char* path)
 {
     Dir_visitAlphaOrder(path, dir_visitor);
-
 }
 
 void showFileComment(const char* path)

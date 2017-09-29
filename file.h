@@ -32,6 +32,14 @@ File_copy(
     const char* dest_file_name
 );
 
+/**
+ * @return file size
+ */
+ssize_t
+File_touch(
+    const char* path
+);
+
 int File_setXAttrStr(
     const char* file_path,
     const char* attr_name,

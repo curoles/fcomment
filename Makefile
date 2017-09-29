@@ -1,5 +1,5 @@
-FILE_LIST := main.c cmd_ls.c cmd_set.c cmd_cp.c file.c terminal.c mfile.c
-FILE_LIST += markdown.c fcomment.c
+FILE_LIST := main.c cmd_ls.c cmd_set.c cmd_cp.c cmd_touch.c
+FILE_LIST += markdown.c fcomment.c file.c terminal.c mfile.c
 
 SRCS := $(addprefix $(SOURCE_PATH)/,$(FILE_LIST))
 

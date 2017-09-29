@@ -92,6 +92,34 @@ File_copy(
     return stat_source.st_size;
 }
 
+/**
+ * @return file size
+ */
+ssize_t
+File_touch(
+    const char* path
+)
+{
+    // -rw-r--r-- 0644 = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
+    int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+
+    int fd = (File_exist(path))?
+        open(path, O_RDONLY, 0):
+        open(path, O_WRONLY | O_CREAT , mode);
+
+    if (fd < 0) {
+        perror("Can't open file");
+        return -1;
+    }
+
+    struct stat file_stat;
+    fstat(fd, &file_stat);
+
+    close(fd);
+
+    return file_stat.st_size;
+}
+
 void File_print(
     const char* path,
     FILE* outstream

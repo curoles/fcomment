@@ -12,7 +12,7 @@ _Comment_ is short text associated with a file.
 ## Why do I need this tool?
 
 Purpose of **fcomment** is to document files and directories.
-Attached to a file _comment_ provides short explanation of the file.
+Attached to a file _comment_ provides short description of the file.
 
 Usage cases:
 - To document multiple source code files in a big project
@@ -43,11 +43,12 @@ Yes, if **Extended File Attributes** are supported.
 **fcomment** is implemented as single tool-box program.
 To select a tool use first command line argument or create a symbolic link in form `fcomment-<cmd>`.
 
-| Function    | File name    | Command       | Arguments               |
-| ----------- | ------------ | ------------- | ----------------------- |
-| Get comment | fcomment-ls  | fcomment [ls] | PATH \[OPTIONS\]        |
-| Set comment | fcomment-set | fcomment set  | PATH COMMENT \[OPTIONS\]|
-| Copy comment| fcomment-cp  | fcomment cp   | SRC DEST \[OPTIONS\]    |
+| Function    | File name      | Command        | Arguments               |
+| ----------- | -------------- | -------------- | ----------------------- |
+| Get comment | fcomment-ls    | fcomment [ls]  | PATH \[OPTIONS\]        |
+| Set comment | fcomment-set   | fcomment set   | PATH COMMENT \[OPTIONS\]|
+| Copy comment| fcomment-cp    | fcomment cp    | SRC DEST \[OPTIONS\]    |
+| Touch file  | fcomment-touch | fcomment touch | PATH \[OPTIONS\]        |
 
 ## Set comment
 
@@ -87,7 +88,33 @@ config.makefile
 fcomment - CLI program to 1) attach comment to a file and 2) view attached comment
 ```
 
+## Create a file and save information about it
+
+Command `fcomment touch FILE` creates a new empty file, collects information
+about its place of origin and creator and saves the information into _meta directory_.
+
+If the file already exists, then the information is still collected and saved,
+although the date of creation can't be deduced correctly.
+
 ## Copy and move
+
+Command `fcomment cp SRC DEST` copies _comment_ of `SRC` to _comment_ of `DST`.
+If `DEST` file does not exists, `fcomment cp` creates it.
 
 ## Synchronization
 
+TODO
+
+## Document file
+
+It is possible to extend file _comment_ and attach a _doc file_ to a file.
+_doc file_ is to be created manually and manually added to _meta directory_.
+_doc file_ name must be `doc.md`, it is a text file with Markdown tags.
+
+Example:
+```Text
+igor:~/prj/fcomment/build$ ls ./.meta-fcomment/fcomment/
+comment.txt  doc.md
+```
+
+`fcomment ls|get FILE` shows _comment_ and content of _doc file_ if it exists. 

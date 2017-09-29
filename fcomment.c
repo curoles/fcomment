@@ -100,3 +100,21 @@ FComment_copy(
 
     return FComment_setComment(path_to, buf, comment_size);
 }
+
+bool
+FComment_touchFile(
+    const char* path,
+    bool verbose
+)
+{
+    bool new_file = !File_exist(path);
+
+    /*ssize_t file_size = */ File_touch(path);
+
+    if (new_file)
+    {
+
+    }
+
+    return true;
+}
