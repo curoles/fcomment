@@ -10,6 +10,8 @@
 #include <argp.h>
 #include <sys/xattr.h>
 
+#include "fcomment.h"
+
 // Program documentation.
 static char doc[] =
     "Create new empty file and save information about its origin.";
@@ -83,18 +85,17 @@ int fcomment_touch(int argc, char* argv[])
 
     argp_parse(&argParser, argc, argv, 0, 0, &arguments);
 
-    //const char* path = arguments.args[0];
+    const char* path = arguments.args[0];
 
     /*if (!File_exist(path)) {
         printf("Error: file %s does not exist!", path);
         return EXIT_FAILURE;
     }*/
 
-    bool is_created = true; /*FComment_setComment(
+    bool touched = FComment_touchFile(
        path,
-       comment,
        arguments.verbose
-    );*/
+    );
 
-    return (is_created)? EXIT_SUCCESS : EXIT_FAILURE;
+    return (touched)? EXIT_SUCCESS : EXIT_FAILURE;
 }

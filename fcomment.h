@@ -34,3 +34,9 @@ FComment_copy(
     const char* path_from,
     const char* path_to
 );
+
+bool
+FComment_touchFile(
+    const char* path,
+    bool verbose
+);

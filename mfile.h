@@ -21,4 +21,7 @@ ssize_t MFile_getComment(
 );
 
 char* MFile_docFilePath(const char* path);
+char* MFile_originFilePath(const char* path);
+
+bool MFile_makeHiddenDir(const char* path);
 

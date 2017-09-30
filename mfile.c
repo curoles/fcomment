@@ -20,6 +20,7 @@
 static const char HIDDEN_DIR[] = ".meta-fcomment";
 static const char COMMENT_FILE[] = "comment.txt";
 static const char DOC_FILE[] = "doc.md";
+static const char ORIGIN_FILE[] = "origin.json";
 
 static void ptr_ptr_free(char** allocated_resource) {
     //printf("free %s\n", *allocated_resource);
@@ -157,4 +158,16 @@ char* MFile_docFilePath(const char* path)
     assert(doc_file_name_size > 0);
 
     return doc_file;
+}
+
+char* MFile_originFilePath(const char* path)
+{
+    char* meta_dir AUTO_FREE = MFile_hiddenDirPath(path, true);
+
+    char* origin_file = NULL;
+    int file_name_size = asprintf(&origin_file, "%s/%s", meta_dir, ORIGIN_FILE);
+
+    assert(file_name_size > 0);
+
+    return origin_file;
 }
